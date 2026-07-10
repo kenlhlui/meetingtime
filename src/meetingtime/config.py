@@ -15,6 +15,12 @@ Example config file:
         'Asia/Tokyo',
     ]
     format = '{city} ({date}, {time} {abbr})'
+
+    [profiles.work]
+    timezones = ['America/Toronto', 'Europe/London']
+
+    [profiles.asia]
+    timezones = ['Asia/Singapore', 'Asia/Tokyo', 'Asia/Kolkata']
 """
 
 import os
@@ -65,6 +71,13 @@ def load_config(explicit_path: str | None) -> dict[str, Any]:
 def config_timezones(config: dict[str, Any]) -> list[str] | list:
     """Extract the 'timezones' list from a loaded config dict, if present."""
     zones = config.get("timezones", [])
+    return list(zones) if isinstance(zones, list) else []
+
+
+def config_profile_timezones(config: dict[str, Any], profile_name: str) -> list[str]:
+    """Extract timezones for a named profile, or [] if the profile doesn't exist."""
+    profile = config.get("profiles", {}).get(profile_name, {})
+    zones = profile.get("timezones", [])
     return list(zones) if isinstance(zones, list) else []
 
 

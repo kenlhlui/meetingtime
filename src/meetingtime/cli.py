@@ -53,6 +53,18 @@ def parse_args(argv):
         "file's 'timezones' list, or just the source zone if none is set.",
     )
     parser.add_argument(
+        "--profile",
+        metavar="NAME",
+        help="use a named timezone profile from the config file's [profiles.NAME] section. "
+        "Ignored if --to is also given.",
+    )
+    parser.add_argument(
+        "--exclude",
+        nargs="+",
+        metavar="ZONE",
+        help="time zones/cities to exclude from the output. Takes precedence over all other zone sources.",
+    )
+    parser.add_argument(
         "--format",
         dest="fmt",
         metavar="TEMPLATE",
@@ -134,8 +146,15 @@ def main(argv=None) -> int:
     args = parse_args(sys.argv[1:] if argv is None else argv)
     config = cfg.load_config(args.config)
 
-    # Resolve which target zones to use: --to flag > config file > just the source zone.
-    target_zones = args.to or cfg.config_timezones(config) or [args.from_zone]
+    if args.profile:
+        target_zones = cfg.config_profile_timezones(config, args.profile) + (args.to or [])
+    else:
+        target_zones = args.to or cfg.config_timezones(config) or [args.from_zone]
+
+    if args.exclude:
+        exclude_set = {resolve_timezone(z) for z in args.exclude}
+        target_zones = [z for z in target_zones if resolve_timezone(z) not in exclude_set]
+
     template = args.fmt or cfg.config_format(config) or DEFAULT_FORMAT
 
     try:
