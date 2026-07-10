@@ -85,6 +85,8 @@ format = 'short'
 timezones = ['Asia/Singapore', 'Asia/Hong_Kong', 'Asia/Tokyo']
 ```
 
+See [examples/config.toml](examples/config.toml) for a more complete example.
+
 Then run with a profile:
 
 ```

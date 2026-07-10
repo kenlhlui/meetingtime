@@ -1,0 +1,26 @@
+date_format = '%Y-%m-%d'
+time_format = '%I:%M %p'
+
+[profiles.default]
+timezones = [
+    'America/Toronto',
+    'Europe/London',
+    'America/Los_Angeles',
+    'Asia/Hong_Kong',
+]
+
+[profiles.canada]
+timezones = [
+    'America/St_Johns',
+    'America/Halifax',
+    'America/Toronto',
+    'America/Winnipeg',
+    'America/Edmonton',
+    'America/Vancouver',
+]
+
+[format]
+tz = '{time} {abbr}'
+short = '{city} {time} {abbr}'
+compact = '{city} ({time})'
+default = '{city} ({date}, {time} {abbr})'
