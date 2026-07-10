@@ -37,7 +37,8 @@ pip install /path/to/meetingtime
 ```
 meetingtime --from ZONE --date YYYYMMDD --time HHMM [--to ZONE [ZONE ...]]
        [--profile NAME] [--exclude ZONE [ZONE ...]]
-       [--format TEMPLATE] [--separator SEP] [--config PATH]
+       [--format TEMPLATE] [--date-format STRFTIME] [--time-format STRFTIME]
+       [--separator SEP] [--config PATH]
 ```
 
 - `--from` — source time zone. Accepts an IANA name (`America/Toronto`) or a
@@ -54,6 +55,10 @@ meetingtime --from ZONE --date YYYYMMDD --time HHMM [--to ZONE [ZONE ...]]
 - `--format` — a format name defined in `[format]`, a literal template string
   using `{city} {date} {time} {abbr} {tz}` placeholders, or the special value
   `markdown` for a table. Default: `'{city} ({date}, {time} {abbr})'`.
+- `--date-format` — strftime pattern for the `{date}` field. Default: `%b %-d`
+  (e.g. `Jul 10`). Example: `--date-format '%Y-%m-%d'` → `2026-07-10`.
+- `--time-format` — strftime pattern for the `{time}` field. Default: `%H:%M`
+  (e.g. `14:00`). Example: `--time-format '%I:%M %p'` → `02:00 PM`.
 - `--separator` — string used to join entries (default `'; '`).
 - `--config` — path to a TOML config file (default `~/.config/meetingtime/config.toml`).
 

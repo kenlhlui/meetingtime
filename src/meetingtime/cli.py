@@ -73,6 +73,18 @@ def parse_args(argv):
         f"Default: '{DEFAULT_FORMAT}'",
     )
     parser.add_argument(
+        "--date-format",
+        dest="date_fmt",
+        metavar="STRFTIME",
+        help=f"strftime pattern for the date field (default: '{_DEFAULT_DATE_FMT}'). e.g. '%%Y-%%m-%%d'",
+    )
+    parser.add_argument(
+        "--time-format",
+        dest="time_fmt",
+        metavar="STRFTIME",
+        help=f"strftime pattern for the time field (default: '{_DEFAULT_TIME_FMT}'). e.g. '%%I:%%M %%p'",
+    )
+    parser.add_argument(
         "--separator",
         default="; ",
         help="string used to join per-zone entries (default: '; '). Ignored for markdown.",
@@ -103,7 +115,11 @@ def parse_source_datetime(date_str: str, time_str: str, from_zone: str) -> datet
     return datetime(year, month, day, hour, minute, tzinfo=tz)
 
 
-def convert_to_zones(source_dt: datetime, zone_names):
+_DEFAULT_DATE_FMT = "%b %#d" if sys.platform == "win32" else "%b %-d"
+_DEFAULT_TIME_FMT = "%H:%M"
+
+
+def convert_to_zones(source_dt: datetime, zone_names, date_fmt: str = _DEFAULT_DATE_FMT, time_fmt: str = _DEFAULT_TIME_FMT):
     """Convert source_dt into each named zone, returning a list of field dicts."""
     results = []
     for raw_name in zone_names:
@@ -116,10 +132,8 @@ def convert_to_zones(source_dt: datetime, zone_names):
         converted = source_dt.astimezone(tz)
         results.append({
             "city": display_name(iana_name),
-            "date": converted.strftime("%b %-d")
-            if sys.platform != "win32"
-            else converted.strftime("%b %#d"),
-            "time": converted.strftime("%H:%M"),
+            "date": converted.strftime(date_fmt),
+            "time": converted.strftime(time_fmt),
             "abbr": converted.strftime("%Z"),
             "tz": iana_name,
         })
@@ -160,7 +174,11 @@ def main(argv=None) -> int:
 
     try:
         source_dt = parse_source_datetime(args.date, args.time, args.from_zone)
-        entries = convert_to_zones(source_dt, target_zones)
+        entries = convert_to_zones(
+            source_dt, target_zones,
+            date_fmt=args.date_fmt or _DEFAULT_DATE_FMT,
+            time_fmt=args.time_fmt or _DEFAULT_TIME_FMT,
+        )
     except ValueError as exc:
         print(f"Error: {exc}", file=sys.stderr)
         return 1
