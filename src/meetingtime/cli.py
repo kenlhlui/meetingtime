@@ -131,7 +131,7 @@ def convert_to_zones(source_dt: datetime, zone_names, date_fmt: str = _DEFAULT_D
 
         converted = source_dt.astimezone(tz)
         results.append({
-            "city": display_name(iana_name),
+            "city": display_name(iana_name, raw_hint=raw_name),
             "date": converted.strftime(date_fmt),
             "time": converted.strftime(time_fmt),
             "abbr": converted.strftime("%Z"),
