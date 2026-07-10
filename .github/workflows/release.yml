@@ -1,0 +1,43 @@
+on:
+  push:
+    branches:
+      - main
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+name: Release
+
+jobs:
+  release_please:
+    runs-on: ubuntu-latest
+    outputs:
+      releases_created: ${{ steps.release.outputs.releases_created }}
+    steps:
+      - uses: googleapis/release-please-action@v5
+        id: release
+        with:
+          config-file: release-please-config.json
+          manifest-file: .release-please-manifest.json
+  pypi_publish:
+    runs-on: ubuntu-latest
+    needs: release_please
+    if: ${{ needs.release_please.outputs.releases_created == 'true' }}
+    permissions:
+      id-token: write
+      contents: read
+    environment:
+      name: pypi
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v7
+      - name: Install uv
+        uses: astral-sh/setup-uv@v8.2.0
+        with:
+          version: latest
+      - name: Build
+        run: uv build
+      - name: Publish
+        run: uv publish
