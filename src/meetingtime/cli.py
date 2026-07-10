@@ -1,4 +1,4 @@
-"""Command-line entry point for meetingtime.
+r"""Command-line entry point for meetingtime.
 
 Convert a single date + time in a source time zone into a nicely
 formatted summary across one or more target time zones.
@@ -6,6 +6,7 @@ formatted summary across one or more target time zones.
 Example:
     meetingtime --from America/Toronto --date 20260710 --time 0900 \\
         --to Toronto London 'Los Angeles' Tokyo
+
 """
 
 import argparse
@@ -101,17 +102,15 @@ def convert_to_zones(source_dt: datetime, zone_names):
             raise ValueError(f"Unknown time zone: {raw_name!r}") from exc
 
         converted = source_dt.astimezone(tz)
-        results.append(
-            {
-                "city": display_name(iana_name),
-                "date": converted.strftime("%b %-d")
-                if sys.platform != "win32"
-                else converted.strftime("%b %#d"),
-                "time": converted.strftime("%H:%M"),
-                "abbr": converted.strftime("%Z"),
-                "tz": iana_name,
-            }
-        )
+        results.append({
+            "city": display_name(iana_name),
+            "date": converted.strftime("%b %-d")
+            if sys.platform != "win32"
+            else converted.strftime("%b %#d"),
+            "time": converted.strftime("%H:%M"),
+            "abbr": converted.strftime("%Z"),
+            "tz": iana_name,
+        })
     return results
 
 

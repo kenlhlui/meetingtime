@@ -20,7 +20,7 @@ Example config file:
 import os
 import sys
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 # tomllib is stdlib from Python 3.11+; fall back to the 'tomli' backport
 # on older interpreters if it happens to be installed, otherwise config
@@ -41,7 +41,7 @@ def default_config_path() -> Path:
     return base / "meetingtime" / "config.toml"
 
 
-def load_config(explicit_path: Optional[str]) -> Dict[str, Any]:
+def load_config(explicit_path: str | None) -> dict[str, Any]:
     """Load and return the config dict, or {} if no config file is found/usable."""
     if tomllib is None:
         if explicit_path:
@@ -62,13 +62,13 @@ def load_config(explicit_path: Optional[str]) -> Dict[str, Any]:
         return tomllib.load(fh)
 
 
-def config_timezones(config: Dict[str, Any]) -> List[str]:
+def config_timezones(config: dict[str, Any]) -> list[str] | list:
     """Extract the 'timezones' list from a loaded config dict, if present."""
     zones = config.get("timezones", [])
     return list(zones) if isinstance(zones, list) else []
 
 
-def config_format(config: Dict[str, Any]) -> Optional[str]:
+def config_format(config: dict[str, Any]) -> str | None:
     """Extract the 'format' template string from a loaded config dict, if present."""
     value = config.get("format")
     return value if isinstance(value, str) else None
