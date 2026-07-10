@@ -14,10 +14,13 @@ Example config file:
         'America/Los_Angeles',
         'Asia/Tokyo',
     ]
-    format = '{city} ({date}, {time} {abbr})'
+    [format.default]
+    short = '{city} {time} {abbr}'
+    compact = '{city} ({time})'
 
     [profiles.work]
     timezones = ['America/Toronto', 'Europe/London']
+    format = 'short'
 
     [profiles.asia]
     timezones = ['Asia/Singapore', 'Asia/Tokyo', 'Asia/Kolkata']
@@ -74,14 +77,39 @@ def config_timezones(config: dict[str, Any]) -> list[str] | list:
     return list(zones) if isinstance(zones, list) else []
 
 
+def _profile(config: dict[str, Any], profile_name: str) -> dict[str, Any]:
+    return config.get("profiles", {}).get(profile_name, {})
+
+
 def config_profile_timezones(config: dict[str, Any], profile_name: str) -> list[str]:
     """Extract timezones for a named profile, or [] if the profile doesn't exist."""
-    profile = config.get("profiles", {}).get(profile_name, {})
-    zones = profile.get("timezones", [])
+    zones = _profile(config, profile_name).get("timezones", [])
     return list(zones) if isinstance(zones, list) else []
 
 
-def config_format(config: dict[str, Any]) -> str | None:
-    """Extract the 'format' template string from a loaded config dict, if present."""
-    value = config.get("format")
-    return value if isinstance(value, str) else None
+def config_profile_format(config: dict[str, Any], profile_name: str) -> str | None:
+    """Resolve the format for a named profile via [format] lookup, or None."""
+    value = _profile(config, profile_name).get("format")
+    return resolve_format(config, value) if isinstance(value, str) else None
+
+
+def config_named_formats(config: dict[str, Any]) -> dict[str, str]:
+    """Return the [format] table of named format strings, or {}."""
+    section = config.get("format", {})
+    return (
+        {k: v for k, v in section.items() if isinstance(v, str)}
+        if isinstance(section, dict)
+        else {}
+    )
+
+
+def resolve_format(config: dict[str, Any], name_or_template: str | None) -> str | None:
+    """Resolve a format name or literal template to a template string.
+
+    If name_or_template matches a key in [format], return that template.
+    Otherwise return it as-is (literal template or None).
+    """
+    if name_or_template is None:
+        return None
+    named = config_named_formats(config)
+    return named.get(name_or_template, name_or_template)

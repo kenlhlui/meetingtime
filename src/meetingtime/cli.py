@@ -155,7 +155,8 @@ def main(argv=None) -> int:
         exclude_set = {resolve_timezone(z) for z in args.exclude}
         target_zones = [z for z in target_zones if resolve_timezone(z) not in exclude_set]
 
-    template = args.fmt or cfg.config_format(config) or DEFAULT_FORMAT
+    profile_fmt = cfg.config_profile_format(config, args.profile) if args.profile else None
+    template = cfg.resolve_format(config, args.fmt) or profile_fmt or DEFAULT_FORMAT
 
     try:
         source_dt = parse_source_datetime(args.date, args.time, args.from_zone)
