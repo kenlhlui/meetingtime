@@ -57,8 +57,10 @@ meetingtime --from ZONE --date YYYYMMDD --time HHMM [--to ZONE [ZONE ...]]
   `markdown` for a table. Default: `'{city} ({date}, {time} {abbr})'`.
 - `--date-format` — strftime pattern for the `{date}` field. Default: `%b %-d`
   (e.g. `Jul 10`). Example: `--date-format '%Y-%m-%d'` → `2026-07-10`.
+  Can also be set via `date_format` in the config file.
 - `--time-format` — strftime pattern for the `{time}` field. Default: `%H:%M`
   (e.g. `14:00`). Example: `--time-format '%I:%M %p'` → `02:00 PM`.
+  Can also be set via `time_format` in the config file.
 - `--separator` — string used to join entries (default `'; '`).
 - `--config` — path to a TOML config file (default `~/.config/meetingtime/config.toml`).
 
@@ -68,6 +70,9 @@ Avoid retyping your team's zones every time by creating
 `~/.config/meetingtime/config.toml`:
 
 ```toml
+date_format = '%Y-%m-%d'
+time_format = '%I:%M %p'
+
 [format]
 short   = '{city} {time} {abbr}'
 compact = '{city} ({time})'

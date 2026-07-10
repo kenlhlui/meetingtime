@@ -119,7 +119,12 @@ _DEFAULT_DATE_FMT = "%b %#d" if sys.platform == "win32" else "%b %-d"
 _DEFAULT_TIME_FMT = "%H:%M"
 
 
-def convert_to_zones(source_dt: datetime, zone_names, date_fmt: str = _DEFAULT_DATE_FMT, time_fmt: str = _DEFAULT_TIME_FMT):
+def convert_to_zones(
+    source_dt: datetime,
+    zone_names,
+    date_fmt: str = _DEFAULT_DATE_FMT,
+    time_fmt: str = _DEFAULT_TIME_FMT,
+):
     """Convert source_dt into each named zone, returning a list of field dicts."""
     results = []
     for raw_name in zone_names:
@@ -161,23 +166,30 @@ def main(argv=None) -> int:
     config = cfg.load_config(args.config)
 
     if args.profile:
-        target_zones = cfg.config_profile_timezones(config, args.profile) + (args.to or [])
+        target_zones = cfg.config_profile_timezones(config, args.profile) + (
+            args.to or []
+        )
     else:
         target_zones = args.to or cfg.config_timezones(config) or [args.from_zone]
 
     if args.exclude:
         exclude_set = {resolve_timezone(z) for z in args.exclude}
-        target_zones = [z for z in target_zones if resolve_timezone(z) not in exclude_set]
+        target_zones = [
+            z for z in target_zones if resolve_timezone(z) not in exclude_set
+        ]
 
-    profile_fmt = cfg.config_profile_format(config, args.profile) if args.profile else None
+    profile_fmt = (
+        cfg.config_profile_format(config, args.profile) if args.profile else None
+    )
     template = cfg.resolve_format(config, args.fmt) or profile_fmt or DEFAULT_FORMAT
 
     try:
         source_dt = parse_source_datetime(args.date, args.time, args.from_zone)
         entries = convert_to_zones(
-            source_dt, target_zones,
-            date_fmt=args.date_fmt or _DEFAULT_DATE_FMT,
-            time_fmt=args.time_fmt or _DEFAULT_TIME_FMT,
+            source_dt,
+            target_zones,
+            date_fmt=args.date_fmt or cfg.config_date_format(config) or _DEFAULT_DATE_FMT,
+            time_fmt=args.time_fmt or cfg.config_time_format(config) or _DEFAULT_TIME_FMT,
         )
     except ValueError as exc:
         print(f"Error: {exc}", file=sys.stderr)

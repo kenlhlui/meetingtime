@@ -8,14 +8,12 @@ Looks for a config file at (in order):
 Example config file:
 
     # ~/.config/meetingtime/config.toml
-    timezones = [
-        'America/Toronto',
-        'Europe/London',
-        'America/Los_Angeles',
-        'Asia/Tokyo',
-    ]
-    [format.default]
-    short = '{city} {time} {abbr}'
+    timezones = ['America/Toronto', 'Europe/London', 'America/Los_Angeles', 'Asia/Tokyo']
+    date_format = '%Y-%m-%d'
+    time_format = '%I:%M %p'
+
+    [format]
+    short   = '{city} {time} {abbr}'
     compact = '{city} ({time})'
 
     [profiles.work]
@@ -69,6 +67,16 @@ def load_config(explicit_path: str | None) -> dict[str, Any]:
 
     with path.open("rb") as fh:
         return tomllib.load(fh)
+
+
+def config_date_format(config: dict[str, Any]) -> str | None:
+    value = config.get("date_format")
+    return value if isinstance(value, str) else None
+
+
+def config_time_format(config: dict[str, Any]) -> str | None:
+    value = config.get("time_format")
+    return value if isinstance(value, str) else None
 
 
 def config_timezones(config: dict[str, Any]) -> list[str] | list:
