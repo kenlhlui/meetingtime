@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.0](https://github.com/kenlhlui/meetingtime/compare/v0.2.0...v0.3.0) (2026-07-11)
+
+
+### Features
+
+* add more features ([#7](https://github.com/kenlhlui/meetingtime/issues/7)) ([70104ee](https://github.com/kenlhlui/meetingtime/commit/70104eee7e68638e70fa8d6659bf2d48e2d1c075))
+
 ## [0.2.0](https://github.com/kenlhlui/meetingtime/compare/v0.1.0...v0.2.0) (2026-07-10)
 
 
