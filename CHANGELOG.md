@@ -1,5 +1,12 @@
 # Changelog
 
+## [0.3.1](https://github.com/kenlhlui/meetingtime/compare/v0.3.0...v0.3.1) (2026-07-11)
+
+
+### Bug Fixes
+
+* cli parsing issue ([ae48057](https://github.com/kenlhlui/meetingtime/commit/ae48057e765b881ba93aa55dbba527cae8911d4f))
+
 ## [0.3.0](https://github.com/kenlhlui/meetingtime/compare/v0.2.0...v0.3.0) (2026-07-11)
 
 
