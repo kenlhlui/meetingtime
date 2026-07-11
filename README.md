@@ -36,18 +36,31 @@ pip install /path/to/meetingtime
 
 ```
 meetingtime --from ZONE --date YYYYMMDD --time HHMM [--to ZONE [ZONE ...]]
-       [--format TEMPLATE] [--separator SEP] [--config PATH]
+       [--profile NAME] [--exclude ZONE [ZONE ...]]
+       [--format TEMPLATE] [--date-format STRFTIME] [--time-format STRFTIME]
+       [--separator SEP] [--config PATH]
 ```
 
 - `--from` — source time zone. Accepts an IANA name (`America/Toronto`) or a
   friendly city alias (`Toronto`). See `src/meetingtime/aliases.py` for the full list.
 - `--date` — source date as `YYYYMMDD`, e.g. `20260710`.
 - `--time` — source time as 24-hour `HHMM`, e.g. `0900`.
-- `--to` — one or more target zones/cities. If omitted, falls back to the
-  `timezones` list in your config file, or just the source zone.
-- `--format` — a template string using `{city} {date} {time} {abbr} {tz}`
-  placeholders, or the special value `markdown` for a table. Default:
-  `'{city} ({date}, {time} {abbr})'`.
+- `--to` — one or more target zones/cities. If `--profile` is given, these are
+  added on top of the profile's zones. If omitted with no profile, falls back to
+  the `timezones` list in your config file, or just the source zone.
+- `--profile` — use a named `[profiles.NAME]` section from the config file as
+  the base zone list.
+- `--exclude` — zones/cities to remove from the final output. Takes precedence
+  over all other zone sources including `--to` and `--profile`.
+- `--format` — a format name defined in `[format]`, a literal template string
+  using `{city} {date} {time} {abbr} {tz}` placeholders, or the special value
+  `markdown` for a table. Default: `'{city} ({date}, {time} {abbr})'`.
+- `--date-format` — strftime pattern for the `{date}` field. Default: `%b %-d`
+  (e.g. `Jul 10`). Example: `--date-format '%Y-%m-%d'` → `2026-07-10`.
+  Can also be set via `date_format` in the config file.
+- `--time-format` — strftime pattern for the `{time}` field. Default: `%H:%M`
+  (e.g. `14:00`). Example: `--time-format '%I:%M %p'` → `02:00 PM`.
+  Can also be set via `time_format` in the config file.
 - `--separator` — string used to join entries (default `'; '`).
 - `--config` — path to a TOML config file (default `~/.config/meetingtime/config.toml`).
 
@@ -57,19 +70,39 @@ Avoid retyping your team's zones every time by creating
 `~/.config/meetingtime/config.toml`:
 
 ```toml
-timezones = [
-    'America/Toronto',
-    'Europe/London',
-    'America/Los_Angeles',
-    'Asia/Tokyo',
-]
-format = '{city} ({date}, {time} {abbr})'
+date_format = '%Y-%m-%d'
+time_format = '%I:%M %p'
+
+[format]
+short   = '{city} {time} {abbr}'
+compact = '{city} ({time})'
+
+[profiles.work]
+timezones = ['America/Toronto', 'Europe/London', 'Asia/Tokyo']
+format = 'short'
+
+[profiles.asia]
+timezones = ['Asia/Singapore', 'Asia/Hong_Kong', 'Asia/Tokyo']
 ```
 
-Then just run:
+See [examples/config.toml](examples/config.toml) for a more complete example.
+
+Then run with a profile:
 
 ```
-meetingtime --from Toronto --date 20260710 --time 0900
+meetingtime --from Toronto --date 20260710 --time 0900 --profile work
+```
+
+Add extra zones on top of the profile:
+
+```
+meetingtime --from Toronto --date 20260710 --time 0900 --profile work --to Singapore
+```
+
+Exclude a zone from the output:
+
+```
+meetingtime --from Toronto --date 20260710 --time 0900 --profile work --exclude Tokyo
 ```
 
 ## Markdown table output

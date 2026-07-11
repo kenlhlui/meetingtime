@@ -1,3 +1,3 @@
-'''meetingtime: convert one date/time into a formatted summary across many time zones.'''
+"""meetingtime: convert one date/time into a formatted summary across many time zones."""
 
-__version__ = '0.2.0'
+__version__ = "0.2.0"
