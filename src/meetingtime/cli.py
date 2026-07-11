@@ -76,13 +76,13 @@ def parse_args(argv):
         "--date-format",
         dest="date_fmt",
         metavar="STRFTIME",
-        help=f"strftime pattern for the date field (default: '{_DEFAULT_DATE_FMT}'). e.g. '%%Y-%%m-%%d'",
+        help=f"strftime pattern for the date field (default: '{_DEFAULT_DATE_FMT.replace('%', '%%')}'). e.g. '%%Y-%%m-%%d'",
     )
     parser.add_argument(
         "--time-format",
         dest="time_fmt",
         metavar="STRFTIME",
-        help=f"strftime pattern for the time field (default: '{_DEFAULT_TIME_FMT}'). e.g. '%%I:%%M %%p'",
+        help=f"strftime pattern for the time field (default: '{_DEFAULT_TIME_FMT.replace('%', '%%')}'). e.g. '%%I:%%M %%p'",
     )
     parser.add_argument(
         "--separator",
